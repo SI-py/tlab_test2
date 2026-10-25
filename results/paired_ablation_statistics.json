@@ -1,0 +1,2277 @@
+{
+  "version": 1,
+  "protocol_plan": {
+    "version": 1,
+    "amendment_status": "Direct-contrast postprocessing plan recorded after GPU source bundle launch and before inspection of the new main-test or confirmation ranking predictions. The horizon and frozen-versus-appended questions already appear in research_protocol.json; this amendment specifies their direct contrasts and uncertainty calculations.",
+    "purpose": "Postprocess already saved research-v2 predictions only. No fitting, model scoring, hyperparameter tuning, seed selection, recipe selection, or changes to frozen GPU source bundles.",
+    "splits": [
+      "test",
+      "confirmation"
+    ],
+    "metrics": [
+      "ndcg@10",
+      "factual_completion_weighted_hit@10",
+      "predicted_reward@10"
+    ],
+    "contrasts": {
+      "kion": [
+        {
+          "name": "anchored_h5_vs_matched_control",
+          "candidate": "anchored_h5",
+          "comparator": "matched_control",
+          "status": "direct_contrast_for_prespecified_research_question"
+        },
+        {
+          "name": "anchored_h5_vs_anchored_h1",
+          "candidate": "anchored_h5",
+          "comparator": "anchored_h1",
+          "status": "direct_contrast_for_prespecified_research_question"
+        },
+        {
+          "name": "appended_h5_vs_anchored_h5",
+          "candidate": "appended_h5",
+          "comparator": "anchored_h5",
+          "status": "direct_contrast_for_prespecified_research_question"
+        },
+        {
+          "name": "retention_h5_vs_anchored_h5",
+          "candidate": "retention_h5",
+          "comparator": "anchored_h5",
+          "status": "secondary_reward_contrast"
+        }
+      ],
+      "yambda": [
+        {
+          "name": "anchored_h5_vs_matched_control",
+          "candidate": "anchored_h5",
+          "comparator": "matched_control",
+          "status": "direct_contrast_for_prespecified_research_question"
+        },
+        {
+          "name": "anchored_h5_vs_anchored_h1",
+          "candidate": "anchored_h5",
+          "comparator": "anchored_h1",
+          "status": "direct_contrast_for_prespecified_research_question"
+        },
+        {
+          "name": "duration_neutral_h5_vs_anchored_h5",
+          "candidate": "duration_neutral_h5",
+          "comparator": "anchored_h5",
+          "status": "secondary_reward_contrast"
+        },
+        {
+          "name": "seconds_h5_vs_anchored_h5",
+          "candidate": "seconds_h5",
+          "comparator": "anchored_h5",
+          "status": "secondary_reward_contrast"
+        }
+      ]
+    },
+    "pairing": "Match the same declared SFT initialization seed and exactly the same saved row_id, user_id, target, day, context, and factual completion; retain every target including OOV misses. Require identical complete row populations across all families and seeds within a split. Only the factual-completion metric may exclude rows with missing factual completion; exclusion must be identical across every family and seed, and row/user counts are reported separately for every metric.",
+    "estimand": "Candidate minus comparator, first averaging rows within user, then users, then the complete fixed set of trained SFT/RL checkpoints. All seeds are retained.",
+    "uncertainty": {
+      "bootstrap_samples": 2000,
+      "bootstrap_seed": 42,
+      "confidence": 0.95,
+      "primary": "Paired user-cluster percentile bootstrap conditional on the trained checkpoints and shared frozen reward model; identical sampled user indices across seeds.",
+      "additional": "Training-seed-only and crossed user/seed bootstrap are exploratory with only three seeds and do not include reward-model retraining or architecture/recipe-selection uncertainty.",
+      "p_value": "Two-sided paired sign-flip test on each user's seed-averaged difference, conditional on exchangeability of paired user differences; no causal policy-value interpretation.",
+      "multiplicity": "Separate Holm family of all new direct contrasts times all three metrics within each dataset and split (twelve tests per family). This is separate from the original analysis and is not a study-wide multiplicity guarantee.",
+      "noninferiority": "Not interpreted or reported for these direct contrasts. Existing bootstrap_family is reused only for paired differences, intervals, and sign-flip p-values."
+    },
+    "interpretation": {
+      "ndcg@10": "Logged next-item relevance; observational.",
+      "factual_completion_weighted_hit@10": "Observed bounded completion of the logged target times target hit; observational, not an exposure-adjusted policy value.",
+      "predicted_reward@10": "Frozen completion-critic prediction on recommended items only; explicitly model-based secondary diagnostic, not an observed user benefit.",
+      "horizon": "H=5 and H=1 have equal update/context budgets, but H=5 has five times as many sampled actions; no compute-matched superiority claim.",
+      "appended": "Generated items are hypothetical recommendations, not observed consumption; contrast diagnoses sensitivity to artificial history.",
+      "reward_contrasts": "Retention/duration/seconds contrasts are secondary sensitivity analyses and cannot change the frozen selected recipe.",
+      "policy_gradient": "Only anchored_h5 versus matched_control isolates adding PG with the same H, KL/CE, RM context, sampling and optimizer/context budget. A validation-selected different recipe versus matched_control compares whole procedures and may also change horizon or regularization."
+    },
+    "amendments": [
+      {
+        "status": "Recorded before inspection of new main-test or confirmation ranking predictions; only validation stream logs have been viewed.",
+        "change": "Add anchored_h5 minus matched_control to both datasets to isolate PG at identical H=5, KL/CE weights, frozen RM history and optimizer/context budget. The PG question was already prespecified in research_protocol.json; no model or selected recipe changes.",
+        "multiplicity": "The separate direct-contrast Holm family now has four contrasts times three metrics = twelve tests per dataset and heldout split, replacing nine. This is not a study-wide correction."
+      }
+    ]
+  },
+  "datasets": {
+    "kion": {
+      "seeds": [
+        11,
+        22,
+        33
+      ],
+      "splits": {
+        "test": {
+          "population": {
+            "n_rows": 15942,
+            "n_users": 5627,
+            "identity_columns": [
+              "row_id",
+              "user_id",
+              "target",
+              "day",
+              "context_key",
+              "actual_completion",
+              "known_target"
+            ],
+            "identity_hash_pandas_version": "3.1.0"
+          },
+          "holm_family_n_tests": 12,
+          "comparisons": {
+            "anchored_h5_vs_matched_control": {
+              "baseline_family": "matched_control",
+              "candidate_family": "anchored_h5",
+              "contrast_status": "direct_contrast_for_prespecified_research_question",
+              "metrics": {
+                "ndcg@10": {
+                  "metric": "ndcg@10",
+                  "baseline_mean": 0.08957187784664067,
+                  "tuned_mean": 0.08820300605149722,
+                  "delta": -0.001368871795143448,
+                  "relative_delta": -0.01528238357899724,
+                  "n_users": 5627,
+                  "n_examples": 15942,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.002224543820077233,
+                    "high": -0.0005077522627673878
+                  },
+                  "ci_training_seed": {
+                    "low": -0.0015972011515850654,
+                    "high": -0.0010902833948849254
+                  },
+                  "ci_joint": {
+                    "low": -0.002427085953513233,
+                    "high": -0.00036567524571319625
+                  },
+                  "per_seed_delta": [
+                    -0.0010902833948849254,
+                    -0.0014191308389603532,
+                    -0.0015972011515850654
+                  ],
+                  "paired_randomization_p_two_sided": 0.0029985007496251873,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.00025716897485606187,
+                  "candidate": "anchored_h5",
+                  "comparator": "matched_control",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.0239880059970015
+                },
+                "factual_completion_weighted_hit@10": {
+                  "metric": "factual_completion_weighted_hit@10",
+                  "baseline_mean": 0.07424395321274152,
+                  "tuned_mean": 0.07453468020042138,
+                  "delta": 0.00029072698767987576,
+                  "relative_delta": 0.003915833884098484,
+                  "n_users": 5627,
+                  "n_examples": 15942,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.00048220339915825257,
+                    "high": 0.0011226743846856927
+                  },
+                  "ci_training_seed": {
+                    "low": -8.59650882573589e-05,
+                    "high": 0.0010301942288464157
+                  },
+                  "ci_joint": {
+                    "low": -0.0009419578211610515,
+                    "high": 0.0013706539850986221
+                  },
+                  "per_seed_delta": [
+                    0.0010301942288464157,
+                    -7.204817754942972e-05,
+                    -8.59650882573589e-05
+                  ],
+                  "paired_randomization_p_two_sided": 0.4687656171914043,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.0006404352197293287,
+                  "candidate": "anchored_h5",
+                  "comparator": "matched_control",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 1.0
+                },
+                "predicted_reward@10": {
+                  "metric": "predicted_reward@10",
+                  "baseline_mean": 0.5204711136595105,
+                  "tuned_mean": 0.5444942424214194,
+                  "delta": 0.024023128761908815,
+                  "relative_delta": 0.04615650730930789,
+                  "n_users": 5627,
+                  "n_examples": 15942,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": 0.023560624371661103,
+                    "high": 0.024479525201563705
+                  },
+                  "ci_training_seed": {
+                    "low": 0.02290389950395871,
+                    "high": 0.024949787612764802
+                  },
+                  "ci_joint": {
+                    "low": 0.022931858848241112,
+                    "high": 0.02507268731641906
+                  },
+                  "per_seed_delta": [
+                    0.02290389950395871,
+                    0.024215699169002933,
+                    0.024949787612764805
+                  ],
+                  "paired_randomization_p_two_sided": 0.0004997501249375312,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.0010364492557307574,
+                  "candidate": "anchored_h5",
+                  "comparator": "matched_control",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "model_based_secondary_diagnostic",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.005997001499250375
+                }
+              }
+            },
+            "anchored_h5_vs_anchored_h1": {
+              "baseline_family": "anchored_h1",
+              "candidate_family": "anchored_h5",
+              "contrast_status": "direct_contrast_for_prespecified_research_question",
+              "metrics": {
+                "ndcg@10": {
+                  "metric": "ndcg@10",
+                  "baseline_mean": 0.08869803253761376,
+                  "tuned_mean": 0.08820300605149722,
+                  "delta": -0.0004950264861165356,
+                  "relative_delta": -0.0055810311903661675,
+                  "n_users": 5627,
+                  "n_examples": 15942,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.000998730848466769,
+                    "high": -1.2721119739564789e-07
+                  },
+                  "ci_training_seed": {
+                    "low": -0.0010828604251179642,
+                    "high": -0.00019668747619418364
+                  },
+                  "ci_joint": {
+                    "low": -0.001319639899664233,
+                    "high": 0.00030430082594670824
+                  },
+                  "per_seed_delta": [
+                    -0.00020553155703745857,
+                    -0.00019668747619418364,
+                    -0.0010828604251179642
+                  ],
+                  "paired_randomization_p_two_sided": 0.06296851574212893,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.0005090983297192618,
+                  "candidate": "anchored_h5",
+                  "comparator": "anchored_h1",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.3778110944527736
+                },
+                "factual_completion_weighted_hit@10": {
+                  "metric": "factual_completion_weighted_hit@10",
+                  "baseline_mean": 0.07460609834965228,
+                  "tuned_mean": 0.07453468020042138,
+                  "delta": -7.141814923088016e-05,
+                  "relative_delta": -0.0009572695906997934,
+                  "n_users": 5627,
+                  "n_examples": 15942,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.0006161997272105048,
+                    "high": 0.0004911550368460805
+                  },
+                  "ci_training_seed": {
+                    "low": -0.0003271700205590516,
+                    "high": 0.00016588103722436646
+                  },
+                  "ci_joint": {
+                    "low": -0.0008283528433796849,
+                    "high": 0.0006596552958647525
+                  },
+                  "per_seed_delta": [
+                    0.00016588103722436646,
+                    -5.296546435795521e-05,
+                    -0.00032717002055905164
+                  ],
+                  "paired_randomization_p_two_sided": 0.7886056971514243,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.000247042936712632,
+                  "candidate": "anchored_h5",
+                  "comparator": "anchored_h1",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 1.0
+                },
+                "predicted_reward@10": {
+                  "metric": "predicted_reward@10",
+                  "baseline_mean": 0.5386987906812265,
+                  "tuned_mean": 0.5444942424214194,
+                  "delta": 0.005795451740192866,
+                  "relative_delta": 0.01075824160077298,
+                  "n_users": 5627,
+                  "n_examples": 15942,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": 0.005564967222660355,
+                    "high": 0.006021990428131636
+                  },
+                  "ci_training_seed": {
+                    "low": 0.004658482192905456,
+                    "high": 0.007544473306510622
+                  },
+                  "ci_joint": {
+                    "low": 0.004645002000736513,
+                    "high": 0.007399639221452714
+                  },
+                  "per_seed_delta": [
+                    0.005183399721162522,
+                    0.004658482192905456,
+                    0.007544473306510622
+                  ],
+                  "paired_randomization_p_two_sided": 0.0004997501249375312,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.0015372676840587451,
+                  "candidate": "anchored_h5",
+                  "comparator": "anchored_h1",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "model_based_secondary_diagnostic",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.005997001499250375
+                }
+              }
+            },
+            "appended_h5_vs_anchored_h5": {
+              "baseline_family": "anchored_h5",
+              "candidate_family": "appended_h5",
+              "contrast_status": "direct_contrast_for_prespecified_research_question",
+              "metrics": {
+                "ndcg@10": {
+                  "metric": "ndcg@10",
+                  "baseline_mean": 0.08820300605149722,
+                  "tuned_mean": 0.08815756154180215,
+                  "delta": -4.5444509695079193e-05,
+                  "relative_delta": -0.0005152263140390756,
+                  "n_users": 5627,
+                  "n_examples": 15942,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.00020315225912642914,
+                    "high": 0.00011405011504444297
+                  },
+                  "ci_training_seed": {
+                    "low": -0.00018574237057185938,
+                    "high": 2.7318258544685595e-05
+                  },
+                  "ci_joint": {
+                    "low": -0.00031083645557287764,
+                    "high": 0.0001678940494189574
+                  },
+                  "per_seed_delta": [
+                    2.209058294193617e-05,
+                    -0.00018574237057185938,
+                    2.7318258544685595e-05
+                  ],
+                  "paired_randomization_p_two_sided": 0.5857071464267866,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.00012152962384950498,
+                  "candidate": "appended_h5",
+                  "comparator": "anchored_h5",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 1.0
+                },
+                "factual_completion_weighted_hit@10": {
+                  "metric": "factual_completion_weighted_hit@10",
+                  "baseline_mean": 0.07453468020042138,
+                  "tuned_mean": 0.07461099577349367,
+                  "delta": 7.63155730722818e-05,
+                  "relative_delta": 0.0010238934797475706,
+                  "n_users": 5627,
+                  "n_examples": 15942,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.0001133325637924003,
+                    "high": 0.0002915206216454661
+                  },
+                  "ci_training_seed": {
+                    "low": -8.182410563786074e-05,
+                    "high": 0.0001887352029523702
+                  },
+                  "ci_joint": {
+                    "low": -0.00017935943335801164,
+                    "high": 0.0004492791163430488
+                  },
+                  "per_seed_delta": [
+                    -8.182410563786074e-05,
+                    0.0001887352029523702,
+                    0.00012203562190233595
+                  ],
+                  "paired_randomization_p_two_sided": 0.4757621189405297,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.00014095505317289215,
+                  "candidate": "appended_h5",
+                  "comparator": "anchored_h5",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 1.0
+                },
+                "predicted_reward@10": {
+                  "metric": "predicted_reward@10",
+                  "baseline_mean": 0.5444942424214194,
+                  "tuned_mean": 0.5449415945241829,
+                  "delta": 0.00044735210276346515,
+                  "relative_delta": 0.00082159198006217,
+                  "n_users": 5627,
+                  "n_examples": 15942,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": 0.0003773305026839629,
+                    "high": 0.0005166203584830346
+                  },
+                  "ci_training_seed": {
+                    "low": 0.000248602222288079,
+                    "high": 0.0006193774336521713
+                  },
+                  "ci_joint": {
+                    "low": 0.000242420593961157,
+                    "high": 0.0006462206547830016
+                  },
+                  "per_seed_delta": [
+                    0.00047407665235014496,
+                    0.0006193774336521713,
+                    0.000248602222288079
+                  ],
+                  "paired_randomization_p_two_sided": 0.0004997501249375312,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.00018682669911840763,
+                  "candidate": "appended_h5",
+                  "comparator": "anchored_h5",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "model_based_secondary_diagnostic",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.005997001499250375
+                }
+              }
+            },
+            "retention_h5_vs_anchored_h5": {
+              "baseline_family": "anchored_h5",
+              "candidate_family": "retention_h5",
+              "contrast_status": "secondary_reward_contrast",
+              "metrics": {
+                "ndcg@10": {
+                  "metric": "ndcg@10",
+                  "baseline_mean": 0.08820300605149722,
+                  "tuned_mean": 0.08868865507070225,
+                  "delta": 0.0004856490192050234,
+                  "relative_delta": 0.005506037049593047,
+                  "n_users": 5627,
+                  "n_examples": 15942,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": 9.549857482452236e-05,
+                    "high": 0.0008696556968165465
+                  },
+                  "ci_training_seed": {
+                    "low": 0.00026109255853116634,
+                    "high": 0.0007992050911228414
+                  },
+                  "ci_joint": {
+                    "low": -7.058747504244777e-05,
+                    "high": 0.0010576944800967643
+                  },
+                  "per_seed_delta": [
+                    0.00026109255853116634,
+                    0.0003966494079610625,
+                    0.0007992050911228414
+                  ],
+                  "paired_randomization_p_two_sided": 0.014492753623188406,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.0002798784960196813,
+                  "candidate": "retention_h5",
+                  "comparator": "anchored_h5",
+                  "contrast_status": "secondary_reward_contrast",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.10144927536231885
+                },
+                "factual_completion_weighted_hit@10": {
+                  "metric": "factual_completion_weighted_hit@10",
+                  "baseline_mean": 0.07453468020042138,
+                  "tuned_mean": 0.07456166627186885,
+                  "delta": 2.6986071447455915e-05,
+                  "relative_delta": 0.0003620606055448447,
+                  "n_users": 5627,
+                  "n_examples": 15942,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.00038159892693158057,
+                    "high": 0.0004422809480571978
+                  },
+                  "ci_training_seed": {
+                    "low": -0.00031478389213416766,
+                    "high": 0.00031567214790723623
+                  },
+                  "ci_joint": {
+                    "low": -0.0005959176609613764,
+                    "high": 0.0006127535360911445
+                  },
+                  "per_seed_delta": [
+                    -0.00031478389213416766,
+                    8.00699585692991e-05,
+                    0.00031567214790723623
+                  ],
+                  "paired_randomization_p_two_sided": 0.9045477261369316,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.00031856259810301887,
+                  "candidate": "retention_h5",
+                  "comparator": "anchored_h5",
+                  "contrast_status": "secondary_reward_contrast",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 1.0
+                },
+                "predicted_reward@10": {
+                  "metric": "predicted_reward@10",
+                  "baseline_mean": 0.5444942424214194,
+                  "tuned_mean": 0.5382409036399631,
+                  "delta": -0.0062533387814562675,
+                  "relative_delta": -0.011484673839060364,
+                  "n_users": 5627,
+                  "n_examples": 15942,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.006463802055613359,
+                    "high": -0.006050270864281003
+                  },
+                  "ci_training_seed": {
+                    "low": -0.006611238954070266,
+                    "high": -0.005967326541877763
+                  },
+                  "ci_joint": {
+                    "low": -0.0066604970941643105,
+                    "high": -0.005868352934878501
+                  },
+                  "per_seed_delta": [
+                    -0.006181450848420774,
+                    -0.005967326541877763,
+                    -0.006611238954070266
+                  ],
+                  "paired_randomization_p_two_sided": 0.0004997501249375312,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.0003279202720646872,
+                  "candidate": "retention_h5",
+                  "comparator": "anchored_h5",
+                  "contrast_status": "secondary_reward_contrast",
+                  "endpoint_status": "model_based_secondary_diagnostic",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.005997001499250375
+                }
+              }
+            }
+          }
+        },
+        "confirmation": {
+          "population": {
+            "n_rows": 15487,
+            "n_users": 5483,
+            "identity_columns": [
+              "row_id",
+              "user_id",
+              "target",
+              "day",
+              "context_key",
+              "actual_completion",
+              "known_target"
+            ],
+            "identity_hash_pandas_version": "3.1.0"
+          },
+          "holm_family_n_tests": 12,
+          "comparisons": {
+            "anchored_h5_vs_matched_control": {
+              "baseline_family": "matched_control",
+              "candidate_family": "anchored_h5",
+              "contrast_status": "direct_contrast_for_prespecified_research_question",
+              "metrics": {
+                "ndcg@10": {
+                  "metric": "ndcg@10",
+                  "baseline_mean": 0.08764112899360867,
+                  "tuned_mean": 0.08543410844175815,
+                  "delta": -0.002207020551850504,
+                  "relative_delta": -0.025182475136889825,
+                  "n_users": 5483,
+                  "n_examples": 15487,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.0031832221984692197,
+                    "high": -0.0011392159226501074
+                  },
+                  "ci_training_seed": {
+                    "low": -0.0027585725978617665,
+                    "high": -0.0018906857605364552
+                  },
+                  "ci_joint": {
+                    "low": -0.0034676581260539257,
+                    "high": -0.0009658138304226486
+                  },
+                  "per_seed_delta": [
+                    -0.001890685760536455,
+                    -0.0019718032971532892,
+                    -0.002758572597861767
+                  ],
+                  "paired_randomization_p_two_sided": 0.0004997501249375312,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.0004793769480076236,
+                  "candidate": "anchored_h5",
+                  "comparator": "matched_control",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.005997001499250375
+                },
+                "factual_completion_weighted_hit@10": {
+                  "metric": "factual_completion_weighted_hit@10",
+                  "baseline_mean": 0.06778325020727209,
+                  "tuned_mean": 0.06800578166887536,
+                  "delta": 0.00022253146160325433,
+                  "relative_delta": 0.0032829860020400755,
+                  "n_users": 5483,
+                  "n_examples": 15487,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.0005246990113220268,
+                    "high": 0.0009253878949440228
+                  },
+                  "ci_training_seed": {
+                    "low": -4.505686393271367e-06,
+                    "high": 0.0005017704331770561
+                  },
+                  "ci_joint": {
+                    "low": -0.0006578980641463851,
+                    "high": 0.0010934424327677266
+                  },
+                  "per_seed_delta": [
+                    -4.505686393271367e-06,
+                    0.00017032963802597796,
+                    0.0005017704331770561
+                  ],
+                  "paired_randomization_p_two_sided": 0.5582208895552224,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.0002571432482107822,
+                  "candidate": "anchored_h5",
+                  "comparator": "matched_control",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 1.0
+                },
+                "predicted_reward@10": {
+                  "metric": "predicted_reward@10",
+                  "baseline_mean": 0.5198928602763214,
+                  "tuned_mean": 0.5438257311758105,
+                  "delta": 0.023932870899489107,
+                  "relative_delta": 0.04603423652859718,
+                  "n_users": 5483,
+                  "n_examples": 15487,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": 0.023486136212854433,
+                    "high": 0.024414212347841163
+                  },
+                  "ci_training_seed": {
+                    "low": 0.02275925459518867,
+                    "high": 0.024602653548906773
+                  },
+                  "ci_joint": {
+                    "low": 0.02292074375167464,
+                    "high": 0.024921459115398528
+                  },
+                  "per_seed_delta": [
+                    0.02275925459518867,
+                    0.024436704554371875,
+                    0.024602653548906776
+                  ],
+                  "paired_randomization_p_two_sided": 0.0004997501249375312,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.001019762810405758,
+                  "candidate": "anchored_h5",
+                  "comparator": "matched_control",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "model_based_secondary_diagnostic",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.005997001499250375
+                }
+              }
+            },
+            "anchored_h5_vs_anchored_h1": {
+              "baseline_family": "anchored_h1",
+              "candidate_family": "anchored_h5",
+              "contrast_status": "direct_contrast_for_prespecified_research_question",
+              "metrics": {
+                "ndcg@10": {
+                  "metric": "ndcg@10",
+                  "baseline_mean": 0.08591082926384697,
+                  "tuned_mean": 0.08543410844175815,
+                  "delta": -0.0004767208220888081,
+                  "relative_delta": -0.005549018979024358,
+                  "n_users": 5483,
+                  "n_examples": 15487,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.0009190086747396837,
+                    "high": 9.089932240999942e-06
+                  },
+                  "ci_training_seed": {
+                    "low": -0.0008840626509705554,
+                    "high": 6.432398384364208e-05
+                  },
+                  "ci_joint": {
+                    "low": -0.0012443313912441686,
+                    "high": 0.00029075053834876774
+                  },
+                  "per_seed_delta": [
+                    6.432398384364208e-05,
+                    -0.0006104237991395112,
+                    -0.0008840626509705554
+                  ],
+                  "paired_randomization_p_two_sided": 0.05747126436781609,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.0004881256670445789,
+                  "candidate": "anchored_h5",
+                  "comparator": "anchored_h1",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.34982508745627183
+                },
+                "factual_completion_weighted_hit@10": {
+                  "metric": "factual_completion_weighted_hit@10",
+                  "baseline_mean": 0.06787916952105605,
+                  "tuned_mean": 0.06800578166887536,
+                  "delta": 0.00012661214781929046,
+                  "relative_delta": 0.001865257761882539,
+                  "n_users": 5483,
+                  "n_examples": 15487,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.00036795272266219577,
+                    "high": 0.0005843977226797814
+                  },
+                  "ci_training_seed": {
+                    "low": -8.808435363598475e-05,
+                    "high": 0.0004730479035977729
+                  },
+                  "ci_joint": {
+                    "low": -0.0005139225878399805,
+                    "high": 0.000810893254460706
+                  },
+                  "per_seed_delta": [
+                    -5.1271065039168395e-06,
+                    -8.808435363598475e-05,
+                    0.0004730479035977729
+                  ],
+                  "paired_randomization_p_two_sided": 0.6281859070464768,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.00030287584234185634,
+                  "candidate": "anchored_h5",
+                  "comparator": "anchored_h1",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 1.0
+                },
+                "predicted_reward@10": {
+                  "metric": "predicted_reward@10",
+                  "baseline_mean": 0.5381846806745648,
+                  "tuned_mean": 0.5438257311758105,
+                  "delta": 0.005641050501245805,
+                  "relative_delta": 0.010481625924720244,
+                  "n_users": 5483,
+                  "n_examples": 15487,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": 0.005423002950001916,
+                    "high": 0.00587214087826773
+                  },
+                  "ci_training_seed": {
+                    "low": 0.004701262730277648,
+                    "high": 0.007259820150545972
+                  },
+                  "ci_joint": {
+                    "low": 0.004620925934194755,
+                    "high": 0.0071640613542175244
+                  },
+                  "per_seed_delta": [
+                    0.004962068622913795,
+                    0.004701262730277648,
+                    0.007259820150545972
+                  ],
+                  "paired_randomization_p_two_sided": 0.0004997501249375312,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.0014079475528335468,
+                  "candidate": "anchored_h5",
+                  "comparator": "anchored_h1",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "model_based_secondary_diagnostic",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.005997001499250375
+                }
+              }
+            },
+            "appended_h5_vs_anchored_h5": {
+              "baseline_family": "anchored_h5",
+              "candidate_family": "appended_h5",
+              "contrast_status": "direct_contrast_for_prespecified_research_question",
+              "metrics": {
+                "ndcg@10": {
+                  "metric": "ndcg@10",
+                  "baseline_mean": 0.08543410844175815,
+                  "tuned_mean": 0.0852608195849789,
+                  "delta": -0.00017328885677925105,
+                  "relative_delta": -0.002028333413198605,
+                  "n_users": 5483,
+                  "n_examples": 15487,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.00035129862752243625,
+                    "high": -6.938672551540403e-06
+                  },
+                  "ci_training_seed": {
+                    "low": -0.0003312636351481296,
+                    "high": -4.048983871786037e-05
+                  },
+                  "ci_joint": {
+                    "low": -0.0004428816273099553,
+                    "high": 6.242979701275059e-05
+                  },
+                  "per_seed_delta": [
+                    -0.00014811309647176304,
+                    -0.0003312636351481296,
+                    -4.048983871786037e-05
+                  ],
+                  "paired_randomization_p_two_sided": 0.04997501249375312,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.00014701263331058653,
+                  "candidate": "appended_h5",
+                  "comparator": "anchored_h5",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.34982508745627183
+                },
+                "factual_completion_weighted_hit@10": {
+                  "metric": "factual_completion_weighted_hit@10",
+                  "baseline_mean": 0.06800578166887536,
+                  "tuned_mean": 0.06814774484382334,
+                  "delta": 0.0001419631749480072,
+                  "relative_delta": 0.0020875162591209562,
+                  "n_users": 5483,
+                  "n_examples": 15487,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -2.18628008167842e-05,
+                    "high": 0.00035256987166638415
+                  },
+                  "ci_training_seed": {
+                    "low": 0.00010263515192626223,
+                    "high": 0.00018305064137637546
+                  },
+                  "ci_joint": {
+                    "low": -7.031502855869077e-05,
+                    "high": 0.0004234021555800099
+                  },
+                  "per_seed_delta": [
+                    0.00010263515192626224,
+                    0.00014020373154138388,
+                    0.00018305064137637546
+                  ],
+                  "paired_randomization_p_two_sided": 0.16741629185407297,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 4.0236606053457716e-05,
+                  "candidate": "appended_h5",
+                  "comparator": "anchored_h5",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.8370814592703648
+                },
+                "predicted_reward@10": {
+                  "metric": "predicted_reward@10",
+                  "baseline_mean": 0.5438257311758105,
+                  "tuned_mean": 0.5442416431615298,
+                  "delta": 0.00041591198571923755,
+                  "relative_delta": 0.0007647890893650629,
+                  "n_users": 5483,
+                  "n_examples": 15487,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": 0.00034122912899599327,
+                    "high": 0.0004900046033421954
+                  },
+                  "ci_training_seed": {
+                    "low": 0.00017724887106184285,
+                    "high": 0.0006868948321822632
+                  },
+                  "ci_joint": {
+                    "low": 0.00018246125551398955,
+                    "high": 0.0006680821153977573
+                  },
+                  "per_seed_delta": [
+                    0.0003835922539136066,
+                    0.0006868948321822632,
+                    0.00017724887106184285
+                  ],
+                  "paired_randomization_p_two_sided": 0.0004997501249375312,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.0002563555640503638,
+                  "candidate": "appended_h5",
+                  "comparator": "anchored_h5",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "model_based_secondary_diagnostic",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.005997001499250375
+                }
+              }
+            },
+            "retention_h5_vs_anchored_h5": {
+              "baseline_family": "anchored_h5",
+              "candidate_family": "retention_h5",
+              "contrast_status": "secondary_reward_contrast",
+              "metrics": {
+                "ndcg@10": {
+                  "metric": "ndcg@10",
+                  "baseline_mean": 0.08543410844175815,
+                  "tuned_mean": 0.08569186837968433,
+                  "delta": 0.00025775993792617524,
+                  "relative_delta": 0.0030170612490431088,
+                  "n_users": 5483,
+                  "n_examples": 15487,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.00014985166134791914,
+                    "high": 0.0006747836965987149
+                  },
+                  "ci_training_seed": {
+                    "low": 0.00022191208825779005,
+                    "high": 0.000298155516521198
+                  },
+                  "ci_joint": {
+                    "low": -0.0002417347502450744,
+                    "high": 0.0008010961156056439
+                  },
+                  "per_seed_delta": [
+                    0.000253212208999538,
+                    0.00022191208825779005,
+                    0.000298155516521198
+                  ],
+                  "paired_randomization_p_two_sided": 0.21039480259870064,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 3.832461959539834e-05,
+                  "candidate": "retention_h5",
+                  "comparator": "anchored_h5",
+                  "contrast_status": "secondary_reward_contrast",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.8415792103948025
+                },
+                "factual_completion_weighted_hit@10": {
+                  "metric": "factual_completion_weighted_hit@10",
+                  "baseline_mean": 0.06800578166887536,
+                  "tuned_mean": 0.06782912541920458,
+                  "delta": -0.0001766562496707718,
+                  "relative_delta": -0.002597665159278997,
+                  "n_users": 5483,
+                  "n_examples": 15487,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.0005628097876522684,
+                    "high": 0.00021754450482408045
+                  },
+                  "ci_training_seed": {
+                    "low": -0.0003596216822111522,
+                    "high": 0.00014951696081791976
+                  },
+                  "ci_joint": {
+                    "low": -0.0007795721767570603,
+                    "high": 0.0003655461499045991
+                  },
+                  "per_seed_delta": [
+                    0.00014951696081791976,
+                    -0.0003198640276190828,
+                    -0.0003596216822111522
+                  ],
+                  "paired_randomization_p_two_sided": 0.39480259870064965,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.0002831728980764945,
+                  "candidate": "retention_h5",
+                  "comparator": "anchored_h5",
+                  "contrast_status": "secondary_reward_contrast",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 1.0
+                },
+                "predicted_reward@10": {
+                  "metric": "predicted_reward@10",
+                  "baseline_mean": 0.5438257311758105,
+                  "tuned_mean": 0.5374925891093373,
+                  "delta": -0.006333142066473252,
+                  "relative_delta": -0.011645535882938656,
+                  "n_users": 5483,
+                  "n_examples": 15487,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.0065362107164253,
+                    "high": -0.006127717973188703
+                  },
+                  "ci_training_seed": {
+                    "low": -0.006522799999869985,
+                    "high": -0.005981570344196417
+                  },
+                  "ci_joint": {
+                    "low": -0.006730688307668152,
+                    "high": -0.005971659431797106
+                  },
+                  "per_seed_delta": [
+                    -0.005981570344196418,
+                    -0.006522799999869985,
+                    -0.0064950558553533546
+                  ],
+                  "paired_randomization_p_two_sided": 0.0004997501249375312,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.00030478589422291925,
+                  "candidate": "retention_h5",
+                  "comparator": "anchored_h5",
+                  "contrast_status": "secondary_reward_contrast",
+                  "endpoint_status": "model_based_secondary_diagnostic",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.005997001499250375
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "yambda": {
+      "seeds": [
+        11,
+        22,
+        33
+      ],
+      "splits": {
+        "test": {
+          "population": {
+            "n_rows": 30793,
+            "n_users": 1658,
+            "identity_columns": [
+              "row_id",
+              "user_id",
+              "target",
+              "day",
+              "context_key",
+              "actual_completion",
+              "known_target"
+            ],
+            "identity_hash_pandas_version": "3.1.0"
+          },
+          "holm_family_n_tests": 12,
+          "comparisons": {
+            "anchored_h5_vs_matched_control": {
+              "baseline_family": "matched_control",
+              "candidate_family": "anchored_h5",
+              "contrast_status": "direct_contrast_for_prespecified_research_question",
+              "metrics": {
+                "ndcg@10": {
+                  "metric": "ndcg@10",
+                  "baseline_mean": 0.004784381735675352,
+                  "tuned_mean": 0.004838867938628033,
+                  "delta": 5.4486202952681665e-05,
+                  "relative_delta": 0.0113883477454147,
+                  "n_users": 1658,
+                  "n_examples": 30793,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -1.6068050438092704e-05,
+                    "high": 0.00012493700882806581
+                  },
+                  "ci_training_seed": {
+                    "low": 3.050333380283344e-05,
+                    "high": 9.387672933504675e-05
+                  },
+                  "ci_joint": {
+                    "low": -4.2589044775647215e-05,
+                    "high": 0.00014639173253276882
+                  },
+                  "per_seed_delta": [
+                    9.387672933504676e-05,
+                    3.907854572016479e-05,
+                    3.050333380283344e-05
+                  ],
+                  "paired_randomization_p_two_sided": 0.14642678660669664,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 3.438159015180415e-05,
+                  "candidate": "anchored_h5",
+                  "comparator": "matched_control",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.5857071464267866
+                },
+                "factual_completion_weighted_hit@10": {
+                  "metric": "factual_completion_weighted_hit@10",
+                  "baseline_mean": 0.007212580213030872,
+                  "tuned_mean": 0.0072233961048184985,
+                  "delta": 1.0815891787624646e-05,
+                  "relative_delta": 0.0014995870365619947,
+                  "n_users": 1658,
+                  "n_examples": 30793,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.00016628988305633055,
+                    "high": 0.0001762454678551218
+                  },
+                  "ci_training_seed": {
+                    "low": -0.0001048663577836963,
+                    "high": 0.00014987937337634648
+                  },
+                  "ci_joint": {
+                    "low": -0.0002460072644021556,
+                    "high": 0.00024742251778267987
+                  },
+                  "per_seed_delta": [
+                    0.00014987937337634648,
+                    -0.00010486635778369631,
+                    -1.2565340229776199e-05
+                  ],
+                  "paired_randomization_p_two_sided": 0.8985507246376812,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.00012897231638632706,
+                  "candidate": "anchored_h5",
+                  "comparator": "matched_control",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.8985507246376812
+                },
+                "predicted_reward@10": {
+                  "metric": "predicted_reward@10",
+                  "baseline_mean": 0.652467866504926,
+                  "tuned_mean": 0.6537181284937641,
+                  "delta": 0.0012502619888380981,
+                  "relative_delta": 0.0019162046945474498,
+                  "n_users": 1658,
+                  "n_examples": 30793,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": 0.0012066176911798526,
+                    "high": 0.0012933335067589677
+                  },
+                  "ci_training_seed": {
+                    "low": 0.0012341070898992863,
+                    "high": 0.0012771824930167368
+                  },
+                  "ci_joint": {
+                    "low": 0.0011937206473732877,
+                    "high": 0.0013044638336216806
+                  },
+                  "per_seed_delta": [
+                    0.0012341070898992863,
+                    0.001239496383598271,
+                    0.0012771824930167368
+                  ],
+                  "paired_randomization_p_two_sided": 0.0004997501249375312,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 2.346904941763851e-05,
+                  "candidate": "anchored_h5",
+                  "comparator": "matched_control",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "model_based_secondary_diagnostic",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.005997001499250375
+                }
+              }
+            },
+            "anchored_h5_vs_anchored_h1": {
+              "baseline_family": "anchored_h1",
+              "candidate_family": "anchored_h5",
+              "contrast_status": "direct_contrast_for_prespecified_research_question",
+              "metrics": {
+                "ndcg@10": {
+                  "metric": "ndcg@10",
+                  "baseline_mean": 0.004905529128479804,
+                  "tuned_mean": 0.004838867938628033,
+                  "delta": -6.666118985177042e-05,
+                  "relative_delta": -0.013588990729819263,
+                  "n_users": 1658,
+                  "n_examples": 30793,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.0001407669233646799,
+                    "high": 4.374825663542324e-06
+                  },
+                  "ci_training_seed": {
+                    "low": -0.00012284140594811776,
+                    "high": -8.684419896592431e-06
+                  },
+                  "ci_joint": {
+                    "low": -0.0001806926646809711,
+                    "high": 3.813342723478885e-05
+                  },
+                  "per_seed_delta": [
+                    -8.684419896592431e-06,
+                    -0.00012284140594811776,
+                    -6.845774371060108e-05
+                  ],
+                  "paired_randomization_p_two_sided": 0.07096451774112944,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 5.7099694135939086e-05,
+                  "candidate": "anchored_h5",
+                  "comparator": "anchored_h1",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.40379810094952523
+                },
+                "factual_completion_weighted_hit@10": {
+                  "metric": "factual_completion_weighted_hit@10",
+                  "baseline_mean": 0.007397475000618399,
+                  "tuned_mean": 0.0072233961048184985,
+                  "delta": -0.00017407889579990136,
+                  "relative_delta": -0.023532204675967013,
+                  "n_users": 1658,
+                  "n_examples": 30793,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.0003595332599834876,
+                    "high": -5.520549371155374e-06
+                  },
+                  "ci_training_seed": {
+                    "low": -0.00034340676994305206,
+                    "high": -1.749095340698635e-05
+                  },
+                  "ci_joint": {
+                    "low": -0.000479964370591058,
+                    "high": 7.359770733573264e-05
+                  },
+                  "per_seed_delta": [
+                    -1.749095340698635e-05,
+                    -0.00034340676994305206,
+                    -0.00016133896404966566
+                  ],
+                  "paired_randomization_p_two_sided": 0.050474762618690654,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.00016333098071965132,
+                  "candidate": "anchored_h5",
+                  "comparator": "anchored_h1",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.40379810094952523
+                },
+                "predicted_reward@10": {
+                  "metric": "predicted_reward@10",
+                  "baseline_mean": 0.6538157744320359,
+                  "tuned_mean": 0.6537181284937641,
+                  "delta": -9.764593827183285e-05,
+                  "relative_delta": -0.0001493477858601026,
+                  "n_users": 1658,
+                  "n_examples": 30793,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.0001550168863057118,
+                    "high": -4.4029697441129895e-05
+                  },
+                  "ci_training_seed": {
+                    "low": -0.00021111632767454835,
+                    "high": -2.3847508026681982e-05
+                  },
+                  "ci_joint": {
+                    "low": -0.0002143438122836328,
+                    "high": 1.038672006015922e-06
+                  },
+                  "per_seed_delta": [
+                    -2.3847508026681982e-05,
+                    -0.00021111632767454837,
+                    -5.797397911426818e-05
+                  ],
+                  "paired_randomization_p_two_sided": 0.0004997501249375312,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 9.97386633188248e-05,
+                  "candidate": "anchored_h5",
+                  "comparator": "anchored_h1",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "model_based_secondary_diagnostic",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.005997001499250375
+                }
+              }
+            },
+            "duration_neutral_h5_vs_anchored_h5": {
+              "baseline_family": "anchored_h5",
+              "candidate_family": "duration_neutral_h5",
+              "contrast_status": "secondary_reward_contrast",
+              "metrics": {
+                "ndcg@10": {
+                  "metric": "ndcg@10",
+                  "baseline_mean": 0.004838867938628033,
+                  "tuned_mean": 0.004803817753766171,
+                  "delta": -3.5050184861861595e-05,
+                  "relative_delta": -0.007243467957052656,
+                  "n_users": 1658,
+                  "n_examples": 30793,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -9.240655989596613e-05,
+                    "high": 1.9985140373949263e-05
+                  },
+                  "ci_training_seed": {
+                    "low": -5.0664751101513086e-05,
+                    "high": -7.676557269201493e-06
+                  },
+                  "ci_joint": {
+                    "low": -0.00010658914271643564,
+                    "high": 3.3794575329889614e-05
+                  },
+                  "per_seed_delta": [
+                    -7.676557269201493e-06,
+                    -5.0664751101513086e-05,
+                    -4.680924621487022e-05
+                  ],
+                  "paired_randomization_p_two_sided": 0.2128935532233883,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 2.3784508512243088e-05,
+                  "candidate": "duration_neutral_h5",
+                  "comparator": "anchored_h5",
+                  "contrast_status": "secondary_reward_contrast",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.6386806596701649
+                },
+                "factual_completion_weighted_hit@10": {
+                  "metric": "factual_completion_weighted_hit@10",
+                  "baseline_mean": 0.0072233961048184985,
+                  "tuned_mean": 0.007147970559082701,
+                  "delta": -7.542554573579721e-05,
+                  "relative_delta": -0.010441839910382767,
+                  "n_users": 1658,
+                  "n_examples": 30793,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.00019696337599471443,
+                    "high": 4.041599719665942e-05
+                  },
+                  "ci_training_seed": {
+                    "low": -0.00014626055453714114,
+                    "high": -2.3019702312700184e-05
+                  },
+                  "ci_joint": {
+                    "low": -0.00024370476422495502,
+                    "high": 7.94330528195067e-05
+                  },
+                  "per_seed_delta": [
+                    -5.699638035755033e-05,
+                    -0.00014626055453714114,
+                    -2.301970231270018e-05
+                  ],
+                  "paired_randomization_p_two_sided": 0.22938530734632684,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 6.365377063973275e-05,
+                  "candidate": "duration_neutral_h5",
+                  "comparator": "anchored_h5",
+                  "contrast_status": "secondary_reward_contrast",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.6386806596701649
+                },
+                "predicted_reward@10": {
+                  "metric": "predicted_reward@10",
+                  "baseline_mean": 0.6537181284937641,
+                  "tuned_mean": 0.6533075562142686,
+                  "delta": -0.0004105722794954146,
+                  "relative_delta": -0.0006280570502785607,
+                  "n_users": 1658,
+                  "n_examples": 30793,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.0004388489685014686,
+                    "high": -0.00038337397378281757
+                  },
+                  "ci_training_seed": {
+                    "low": -0.00043534750947489114,
+                    "high": -0.00038106172108483147
+                  },
+                  "ci_joint": {
+                    "low": -0.0004545583132893892,
+                    "high": -0.0003674964260765386
+                  },
+                  "per_seed_delta": [
+                    -0.00043534750947489114,
+                    -0.00038106172108483147,
+                    -0.0004153076079265214
+                  ],
+                  "paired_randomization_p_two_sided": 0.0004997501249375312,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 2.7450941819825057e-05,
+                  "candidate": "duration_neutral_h5",
+                  "comparator": "anchored_h5",
+                  "contrast_status": "secondary_reward_contrast",
+                  "endpoint_status": "model_based_secondary_diagnostic",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.005997001499250375
+                }
+              }
+            },
+            "seconds_h5_vs_anchored_h5": {
+              "baseline_family": "anchored_h5",
+              "candidate_family": "seconds_h5",
+              "contrast_status": "secondary_reward_contrast",
+              "metrics": {
+                "ndcg@10": {
+                  "metric": "ndcg@10",
+                  "baseline_mean": 0.004838867938628033,
+                  "tuned_mean": 0.004716376258038097,
+                  "delta": -0.00012249168058993558,
+                  "relative_delta": -0.025314119365007038,
+                  "n_users": 1658,
+                  "n_examples": 30793,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.00025222398879824764,
+                    "high": -1.382418550629612e-06
+                  },
+                  "ci_training_seed": {
+                    "low": -0.00027390096535679926,
+                    "high": -3.542048157268688e-05
+                  },
+                  "ci_joint": {
+                    "low": -0.0003407082706401217,
+                    "high": 5.8798769382899914e-05
+                  },
+                  "per_seed_delta": [
+                    -3.542048157268688e-05,
+                    -5.815359484032061e-05,
+                    -0.00027390096535679926
+                  ],
+                  "paired_randomization_p_two_sided": 0.05347326336831584,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.00013161602199170008,
+                  "candidate": "seconds_h5",
+                  "comparator": "anchored_h5",
+                  "contrast_status": "secondary_reward_contrast",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.40379810094952523
+                },
+                "factual_completion_weighted_hit@10": {
+                  "metric": "factual_completion_weighted_hit@10",
+                  "baseline_mean": 0.0072233961048184985,
+                  "tuned_mean": 0.00700872420249385,
+                  "delta": -0.0002146719023246479,
+                  "relative_delta": -0.02971897141033801,
+                  "n_users": 1658,
+                  "n_examples": 30793,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.00044268494468088944,
+                    "high": 8.828963682832004e-06
+                  },
+                  "ci_training_seed": {
+                    "low": -0.0005003809287347147,
+                    "high": -3.687965261865252e-05
+                  },
+                  "ci_joint": {
+                    "low": -0.0006075847044349363,
+                    "high": 0.00013244477367260562
+                  },
+                  "per_seed_delta": [
+                    -3.687965261865252e-05,
+                    -0.00010675512562057657,
+                    -0.0005003809287347147
+                  ],
+                  "paired_randomization_p_two_sided": 0.06696651674162919,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.0002498857364095675,
+                  "candidate": "seconds_h5",
+                  "comparator": "anchored_h5",
+                  "contrast_status": "secondary_reward_contrast",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.40379810094952523
+                },
+                "predicted_reward@10": {
+                  "metric": "predicted_reward@10",
+                  "baseline_mean": 0.6537181284937641,
+                  "tuned_mean": 0.6517133681467914,
+                  "delta": -0.0020047603469725787,
+                  "relative_delta": -0.003066704531495492,
+                  "n_users": 1658,
+                  "n_examples": 30793,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.00208285614209855,
+                    "high": -0.0019294126840414141
+                  },
+                  "ci_training_seed": {
+                    "low": -0.002260945921166719,
+                    "high": -0.0018680535462582378
+                  },
+                  "ci_joint": {
+                    "low": -0.0022371927837564363,
+                    "high": -0.0018175591495354216
+                  },
+                  "per_seed_delta": [
+                    -0.0018852815734927792,
+                    -0.0018680535462582378,
+                    -0.002260945921166719
+                  ],
+                  "paired_randomization_p_two_sided": 0.0004997501249375312,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.00022203037528564554,
+                  "candidate": "seconds_h5",
+                  "comparator": "anchored_h5",
+                  "contrast_status": "secondary_reward_contrast",
+                  "endpoint_status": "model_based_secondary_diagnostic",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.005997001499250375
+                }
+              }
+            }
+          }
+        },
+        "confirmation": {
+          "population": {
+            "n_rows": 32053,
+            "n_users": 1772,
+            "identity_columns": [
+              "row_id",
+              "user_id",
+              "target",
+              "day",
+              "context_key",
+              "actual_completion",
+              "known_target"
+            ],
+            "identity_hash_pandas_version": "3.1.0"
+          },
+          "holm_family_n_tests": 12,
+          "comparisons": {
+            "anchored_h5_vs_matched_control": {
+              "baseline_family": "matched_control",
+              "candidate_family": "anchored_h5",
+              "contrast_status": "direct_contrast_for_prespecified_research_question",
+              "metrics": {
+                "ndcg@10": {
+                  "metric": "ndcg@10",
+                  "baseline_mean": 0.004394841099621303,
+                  "tuned_mean": 0.004414416271724072,
+                  "delta": 1.9575172102768754e-05,
+                  "relative_delta": 0.004454125111475706,
+                  "n_users": 1772,
+                  "n_examples": 32053,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -4.280296145776121e-05,
+                    "high": 7.951016817769658e-05
+                  },
+                  "ci_training_seed": {
+                    "low": -4.984552595733525e-05,
+                    "high": 7.70944306768486e-05
+                  },
+                  "ci_joint": {
+                    "low": -7.841612965302551e-05,
+                    "high": 0.00011885842562906516
+                  },
+                  "per_seed_delta": [
+                    -4.984552595733525e-05,
+                    3.147661158879293e-05,
+                    7.70944306768486e-05
+                  ],
+                  "paired_randomization_p_two_sided": 0.5527236381809095,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 6.430141012413134e-05,
+                  "candidate": "anchored_h5",
+                  "comparator": "matched_control",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 1.0
+                },
+                "factual_completion_weighted_hit@10": {
+                  "metric": "factual_completion_weighted_hit@10",
+                  "baseline_mean": 0.005984867447919607,
+                  "tuned_mean": 0.006021020542512798,
+                  "delta": 3.615309459318988e-05,
+                  "relative_delta": 0.006040751095624852,
+                  "n_users": 1772,
+                  "n_examples": 32053,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -9.009806718568577e-05,
+                    "high": 0.0001555225804483379
+                  },
+                  "ci_training_seed": {
+                    "low": -8.013544012382458e-05,
+                    "high": 0.00010270880368111434
+                  },
+                  "ci_joint": {
+                    "low": -0.0001499119464628353,
+                    "high": 0.00022038191999732186
+                  },
+                  "per_seed_delta": [
+                    -8.013544012382458e-05,
+                    8.588592022227985e-05,
+                    0.00010270880368111434
+                  ],
+                  "paired_randomization_p_two_sided": 0.5462268865567217,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.00010105948660041812,
+                  "candidate": "anchored_h5",
+                  "comparator": "matched_control",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 1.0
+                },
+                "predicted_reward@10": {
+                  "metric": "predicted_reward@10",
+                  "baseline_mean": 0.6557018771310017,
+                  "tuned_mean": 0.6569443623876037,
+                  "delta": 0.0012424852566020003,
+                  "relative_delta": 0.001894893548327857,
+                  "n_users": 1772,
+                  "n_examples": 32053,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": 0.0011988386034214335,
+                    "high": 0.0012868003466304453
+                  },
+                  "ci_training_seed": {
+                    "low": 0.0011663298359240611,
+                    "high": 0.0012901272319733956
+                  },
+                  "ci_joint": {
+                    "low": 0.0011629766205041561,
+                    "high": 0.0013194773545420037
+                  },
+                  "per_seed_delta": [
+                    0.001270998701908544,
+                    0.0011663298359240611,
+                    0.0012901272319733956
+                  ],
+                  "paired_randomization_p_two_sided": 0.0004997501249375312,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 6.664241321850445e-05,
+                  "candidate": "anchored_h5",
+                  "comparator": "matched_control",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "model_based_secondary_diagnostic",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.005997001499250375
+                }
+              }
+            },
+            "anchored_h5_vs_anchored_h1": {
+              "baseline_family": "anchored_h1",
+              "candidate_family": "anchored_h5",
+              "contrast_status": "direct_contrast_for_prespecified_research_question",
+              "metrics": {
+                "ndcg@10": {
+                  "metric": "ndcg@10",
+                  "baseline_mean": 0.004445239718478982,
+                  "tuned_mean": 0.004414416271724072,
+                  "delta": -3.082344675490965e-05,
+                  "relative_delta": -0.006934034766848623,
+                  "n_users": 1772,
+                  "n_examples": 32053,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -9.517123958262849e-05,
+                    "high": 3.4403848833644e-05
+                  },
+                  "ci_training_seed": {
+                    "low": -6.308559257614019e-05,
+                    "high": 3.0174989903370503e-06
+                  },
+                  "ci_joint": {
+                    "low": -0.00012142411868725423,
+                    "high": 6.0585517561414255e-05
+                  },
+                  "per_seed_delta": [
+                    -3.240224667892582e-05,
+                    -6.308559257614019e-05,
+                    3.0174989903370503e-06
+                  ],
+                  "paired_randomization_p_two_sided": 0.3453273363318341,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 3.307981462405093e-05,
+                  "candidate": "anchored_h5",
+                  "comparator": "anchored_h1",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 1.0
+                },
+                "factual_completion_weighted_hit@10": {
+                  "metric": "factual_completion_weighted_hit@10",
+                  "baseline_mean": 0.006113771154583797,
+                  "tuned_mean": 0.006021020542512798,
+                  "delta": -9.275061207099894e-05,
+                  "relative_delta": -0.015170769354273134,
+                  "n_users": 1772,
+                  "n_examples": 32053,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.00023442119723973378,
+                    "high": 4.833666378579344e-05
+                  },
+                  "ci_training_seed": {
+                    "low": -0.00016837310715242429,
+                    "high": -4.025029887021966e-05
+                  },
+                  "ci_joint": {
+                    "low": -0.0003052311762992814,
+                    "high": 0.00010375378356332031
+                  },
+                  "per_seed_delta": [
+                    -0.00016837310715242429,
+                    -6.962843019035285e-05,
+                    -4.025029887021966e-05
+                  ],
+                  "paired_randomization_p_two_sided": 0.20939530234882558,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 6.711810464934852e-05,
+                  "candidate": "anchored_h5",
+                  "comparator": "anchored_h1",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 1.0
+                },
+                "predicted_reward@10": {
+                  "metric": "predicted_reward@10",
+                  "baseline_mean": 0.6570740505855005,
+                  "tuned_mean": 0.6569443623876037,
+                  "delta": -0.0001296881978967491,
+                  "relative_delta": -0.00019737227148323319,
+                  "n_users": 1772,
+                  "n_examples": 32053,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.00019104435943874097,
+                    "high": -7.492267995878989e-05
+                  },
+                  "ci_training_seed": {
+                    "low": -0.0003007786393390202,
+                    "high": -3.716117976686311e-05
+                  },
+                  "ci_joint": {
+                    "low": -0.00030485332885156935,
+                    "high": -5.805671064012342e-06
+                  },
+                  "per_seed_delta": [
+                    -5.112477458436404e-05,
+                    -0.0003007786393390202,
+                    -3.716117976686311e-05
+                  ],
+                  "paired_randomization_p_two_sided": 0.0004997501249375312,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.0001483330706880304,
+                  "candidate": "anchored_h5",
+                  "comparator": "anchored_h1",
+                  "contrast_status": "direct_contrast_for_prespecified_research_question",
+                  "endpoint_status": "model_based_secondary_diagnostic",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.005997001499250375
+                }
+              }
+            },
+            "duration_neutral_h5_vs_anchored_h5": {
+              "baseline_family": "anchored_h5",
+              "candidate_family": "duration_neutral_h5",
+              "contrast_status": "secondary_reward_contrast",
+              "metrics": {
+                "ndcg@10": {
+                  "metric": "ndcg@10",
+                  "baseline_mean": 0.004414416271724072,
+                  "tuned_mean": 0.004364007198080123,
+                  "delta": -5.0409073643949586e-05,
+                  "relative_delta": -0.01141919351077919,
+                  "n_users": 1772,
+                  "n_examples": 32053,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.00010479215409775007,
+                    "high": 2.6424149686555514e-06
+                  },
+                  "ci_training_seed": {
+                    "low": -8.954349769168332e-05,
+                    "high": -1.195402739350428e-05
+                  },
+                  "ci_joint": {
+                    "low": -0.00013261499872958328,
+                    "high": 2.6039536412262545e-05
+                  },
+                  "per_seed_delta": [
+                    -8.954349769168332e-05,
+                    -1.195402739350428e-05,
+                    -4.9729695846661194e-05
+                  ],
+                  "paired_randomization_p_two_sided": 0.08045977011494253,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 3.8799196395435666e-05,
+                  "candidate": "duration_neutral_h5",
+                  "comparator": "anchored_h5",
+                  "contrast_status": "secondary_reward_contrast",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.5632183908045977
+                },
+                "factual_completion_weighted_hit@10": {
+                  "metric": "factual_completion_weighted_hit@10",
+                  "baseline_mean": 0.006021020542512798,
+                  "tuned_mean": 0.006026062598620901,
+                  "delta": 5.042056108102217e-06,
+                  "relative_delta": 0.0008374088865004899,
+                  "n_users": 1772,
+                  "n_examples": 32053,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.00010142763182296117,
+                    "high": 0.00011047268030389787
+                  },
+                  "ci_training_seed": {
+                    "low": -8.077031658682762e-05,
+                    "high": 0.00010831183462587818
+                  },
+                  "ci_joint": {
+                    "low": -0.00015772087999415402,
+                    "high": 0.00018210288361187148
+                  },
+                  "per_seed_delta": [
+                    -8.077031658682762e-05,
+                    0.00010831183462587818,
+                    -1.24153497147439e-05
+                  ],
+                  "paired_randomization_p_two_sided": 0.9300349825087456,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 9.574228815081552e-05,
+                  "candidate": "duration_neutral_h5",
+                  "comparator": "anchored_h5",
+                  "contrast_status": "secondary_reward_contrast",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 1.0
+                },
+                "predicted_reward@10": {
+                  "metric": "predicted_reward@10",
+                  "baseline_mean": 0.6569443623876037,
+                  "tuned_mean": 0.6565543379944063,
+                  "delta": -0.00039002439319734,
+                  "relative_delta": -0.0005936947107359782,
+                  "n_users": 1772,
+                  "n_examples": 32053,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.0004167438208098609,
+                    "high": -0.00036308470437857886
+                  },
+                  "ci_training_seed": {
+                    "low": -0.0004343052884869271,
+                    "high": -0.0003517570849223619
+                  },
+                  "ci_joint": {
+                    "low": -0.0004433008529300457,
+                    "high": -0.0003399497887841769
+                  },
+                  "per_seed_delta": [
+                    -0.0004343052884869271,
+                    -0.0003517570849223619,
+                    -0.00038401080618273104
+                  ],
+                  "paired_randomization_p_two_sided": 0.0004997501249375312,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 4.160136896210183e-05,
+                  "candidate": "duration_neutral_h5",
+                  "comparator": "anchored_h5",
+                  "contrast_status": "secondary_reward_contrast",
+                  "endpoint_status": "model_based_secondary_diagnostic",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.005997001499250375
+                }
+              }
+            },
+            "seconds_h5_vs_anchored_h5": {
+              "baseline_family": "anchored_h5",
+              "candidate_family": "seconds_h5",
+              "contrast_status": "secondary_reward_contrast",
+              "metrics": {
+                "ndcg@10": {
+                  "metric": "ndcg@10",
+                  "baseline_mean": 0.004414416271724072,
+                  "tuned_mean": 0.004270251418118051,
+                  "delta": -0.00014416485360602192,
+                  "relative_delta": -0.03265773881123305,
+                  "n_users": 1772,
+                  "n_examples": 32053,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.00024994409567814546,
+                    "high": -4.418580574665677e-05
+                  },
+                  "ci_training_seed": {
+                    "low": -0.00016814052497802045,
+                    "high": -0.0001146326213556432
+                  },
+                  "ci_joint": {
+                    "low": -0.0002731181495825343,
+                    "high": -1.5400940960309777e-05
+                  },
+                  "per_seed_delta": [
+                    -0.0001146326213556432,
+                    -0.00016814052497802045,
+                    -0.0001497214144844021
+                  ],
+                  "paired_randomization_p_two_sided": 0.006496751624187906,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 2.7183275448550376e-05,
+                  "candidate": "seconds_h5",
+                  "comparator": "anchored_h5",
+                  "contrast_status": "secondary_reward_contrast",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.051974012993503245
+                },
+                "factual_completion_weighted_hit@10": {
+                  "metric": "factual_completion_weighted_hit@10",
+                  "baseline_mean": 0.006021020542512798,
+                  "tuned_mean": 0.005870997337691586,
+                  "delta": -0.00015002320482121245,
+                  "relative_delta": -0.024916574152494445,
+                  "n_users": 1772,
+                  "n_examples": 32053,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.00035189539081402054,
+                    "high": 5.802026833808602e-05
+                  },
+                  "ci_training_seed": {
+                    "low": -0.00023504514651873377,
+                    "high": -9.926543619396476e-05
+                  },
+                  "ci_joint": {
+                    "low": -0.00040857502338231935,
+                    "high": 0.00012141118666140558
+                  },
+                  "per_seed_delta": [
+                    -0.00011575903175093871,
+                    -9.926543619396476e-05,
+                    -0.00023504514651873377
+                  ],
+                  "paired_randomization_p_two_sided": 0.1629185407296352,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 7.40915487833248e-05,
+                  "candidate": "seconds_h5",
+                  "comparator": "anchored_h5",
+                  "contrast_status": "secondary_reward_contrast",
+                  "endpoint_status": "logged_observational_endpoint",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.9775112443778111
+                },
+                "predicted_reward@10": {
+                  "metric": "predicted_reward@10",
+                  "baseline_mean": 0.6569443623876037,
+                  "tuned_mean": 0.6550074205913529,
+                  "delta": -0.0019369417962508948,
+                  "relative_delta": -0.002948410713521094,
+                  "n_users": 1772,
+                  "n_examples": 32053,
+                  "n_seeds": 3,
+                  "baseline_mode": "matched_training_seeds",
+                  "confidence": 0.95,
+                  "n_bootstrap": 2000,
+                  "ci_user": {
+                    "low": -0.0020119540292552105,
+                    "high": -0.001861005220928751
+                  },
+                  "ci_training_seed": {
+                    "low": -0.002129459968020128,
+                    "high": -0.0018379339907875554
+                  },
+                  "ci_joint": {
+                    "low": -0.002118973322570902,
+                    "high": -0.001784791695470549
+                  },
+                  "per_seed_delta": [
+                    -0.0018379339907875557,
+                    -0.0018434314299450004,
+                    -0.002129459968020128
+                  ],
+                  "paired_randomization_p_two_sided": 0.0004997501249375312,
+                  "caveat": "Few training seeds; conditional randomization p-value; no correction for model selection or causal interpretation",
+                  "training_seed_delta_sd": 0.00016674828426508154,
+                  "candidate": "seconds_h5",
+                  "comparator": "anchored_h5",
+                  "contrast_status": "secondary_reward_contrast",
+                  "endpoint_status": "model_based_secondary_diagnostic",
+                  "n_excluded_missing_metric": 0,
+                  "uncertainty_primary": "ci_user_conditional_on_trained_checkpoints_and_shared_RM",
+                  "interval_multiplicity": "Pointwise intervals; Holm correction applies to two-sided p-values only",
+                  "holm_adjusted_p_two_sided": 0.005997001499250375
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "noninferiority": "Not reported or interpreted for these direct contrasts.",
+  "fitting_or_selection": "None; only saved prediction files are read."
+}

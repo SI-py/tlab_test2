@@ -1,0 +1,409 @@
+{
+  "schema_version": "catalog-audit-1.0",
+  "generated_at_utc": "2026-10-25T13:21:43.663093+00:00",
+  "purpose": "Post-hoc descriptive ID-only audit; not used to change catalogue, train models, select recipes, or estimate policy value.",
+  "definitions": {
+    "in_vocab": "Raw target item belongs to the frozen recommendation catalogue.",
+    "train_seen_excluded": "Raw target item appeared in the complete observed training prefix of this selected cohort but was excluded by the top-frequency catalogue limit.",
+    "unseen_in_cohort_train": "Raw target item has no observed event in this selected cohort before its training cutoff; it may exist and be popular elsewhere in the service.",
+    "fractions_micro": "Category row count divided by all prepared target rows in this period, including out-of-catalog targets.",
+    "fractions_user_macro": "Category fraction within each evaluated user, then equal average over users present in this period.",
+    "oov_composition_micro": "Conditional category proportion among out-of-catalog target rows only.",
+    "training_counts": "Complete raw cohort prefix, before min-history target construction and supervised target sampling; Yambda includes organic listens and repeated listens.",
+    "limit": "Neither OOV nor unseen_in_cohort_train means a new item for the global service. KION's source is aggregated and cannot reveal all earlier pair consumptions.",
+    "outcomes": "No reward values, prediction files, reward models, policy checkpoints, results.json, or frozen selection are accessed. Playback-field validity identifies listen events without reading its values."
+  },
+  "datasets": {
+    "kion": {
+      "n_cohort_users": 30000,
+      "n_catalog_items": 5000,
+      "train_prefix": {
+        "source_rows_scanned": 5476251,
+        "cohort_source_rows": 419265,
+        "train_cutoff": "2021-07-26",
+        "rule": "All aggregated KION user-item source rows of the frozen cohort with last_watch_dt strictly before train_end, including the initial history before supervised targets.",
+        "n_raw_events": 349237,
+        "n_distinct_raw_items": 9648,
+        "n_train_items_excluded_from_catalog": 4648,
+        "in_vocab_raw_event_fraction": 0.9791173329286416,
+        "catalog_rule": "Descending all-cohort-train raw item frequency, ties ascending raw item ID; exact reconstruction verified."
+      },
+      "splits": {
+        "train": {
+          "n_rows": 238398,
+          "n_users": 27350,
+          "raw_item_column": "item_id",
+          "n_distinct_raw_target_items": 8969,
+          "class_counts": {
+            "in_vocab": 232761,
+            "train_seen_excluded": 5637,
+            "unseen_in_cohort_train": 0
+          },
+          "class_user_counts": {
+            "in_vocab": 27303,
+            "train_seen_excluded": 1949,
+            "unseen_in_cohort_train": 0
+          },
+          "class_distinct_item_counts": {
+            "in_vocab": 4992,
+            "train_seen_excluded": 3977,
+            "unseen_in_cohort_train": 0
+          },
+          "fractions_micro": {
+            "in_vocab": 0.9763546674049279,
+            "train_seen_excluded": 0.023645332595072108,
+            "unseen_in_cohort_train": 0.0
+          },
+          "fractions_user_macro": {
+            "in_vocab": 0.988501551201632,
+            "train_seen_excluded": 0.01149844879836568,
+            "unseen_in_cohort_train": 0.0
+          },
+          "oov_composition_micro": {
+            "train_seen_excluded": 1.0,
+            "unseen_in_cohort_train": 0.0
+          }
+        },
+        "rm_valid": {
+          "n_rows": 20832,
+          "n_users": 6991,
+          "raw_item_column": "item_id",
+          "n_distinct_raw_target_items": 3340,
+          "class_counts": {
+            "in_vocab": 19451,
+            "train_seen_excluded": 689,
+            "unseen_in_cohort_train": 692
+          },
+          "class_user_counts": {
+            "in_vocab": 6768,
+            "train_seen_excluded": 544,
+            "unseen_in_cohort_train": 595
+          },
+          "class_distinct_item_counts": {
+            "in_vocab": 2867,
+            "train_seen_excluded": 314,
+            "unseen_in_cohort_train": 159
+          },
+          "fractions_micro": {
+            "in_vocab": 0.9337077572964669,
+            "train_seen_excluded": 0.033074116743471584,
+            "unseen_in_cohort_train": 0.03321812596006144
+          },
+          "fractions_user_macro": {
+            "in_vocab": 0.9339895809206347,
+            "train_seen_excluded": 0.029808943366147044,
+            "unseen_in_cohort_train": 0.03620147571322086
+          },
+          "oov_composition_micro": {
+            "train_seen_excluded": 0.498913830557567,
+            "unseen_in_cohort_train": 0.501086169442433
+          }
+        },
+        "valid": {
+          "n_rows": 17767,
+          "n_users": 6117,
+          "raw_item_column": "item_id",
+          "n_distinct_raw_target_items": 3134,
+          "class_counts": {
+            "in_vocab": 15725,
+            "train_seen_excluded": 571,
+            "unseen_in_cohort_train": 1471
+          },
+          "class_user_counts": {
+            "in_vocab": 5834,
+            "train_seen_excluded": 465,
+            "unseen_in_cohort_train": 1059
+          },
+          "class_distinct_item_counts": {
+            "in_vocab": 2656,
+            "train_seen_excluded": 275,
+            "unseen_in_cohort_train": 203
+          },
+          "fractions_micro": {
+            "in_vocab": 0.8850678223673102,
+            "train_seen_excluded": 0.03213823380424382,
+            "unseen_in_cohort_train": 0.082793943828446
+          },
+          "fractions_user_macro": {
+            "in_vocab": 0.8941920626898875,
+            "train_seen_excluded": 0.02822851114405572,
+            "unseen_in_cohort_train": 0.07757942616605863
+          },
+          "oov_composition_micro": {
+            "train_seen_excluded": 0.27962781586679725,
+            "unseen_in_cohort_train": 0.7203721841332027
+          }
+        },
+        "test": {
+          "n_rows": 15942,
+          "n_users": 5627,
+          "raw_item_column": "item_id",
+          "n_distinct_raw_target_items": 3089,
+          "class_counts": {
+            "in_vocab": 13462,
+            "train_seen_excluded": 511,
+            "unseen_in_cohort_train": 1969
+          },
+          "class_user_counts": {
+            "in_vocab": 5215,
+            "train_seen_excluded": 389,
+            "unseen_in_cohort_train": 1375
+          },
+          "class_distinct_item_counts": {
+            "in_vocab": 2516,
+            "train_seen_excluded": 271,
+            "unseen_in_cohort_train": 302
+          },
+          "fractions_micro": {
+            "in_vocab": 0.8444360807928741,
+            "train_seen_excluded": 0.03205369464308117,
+            "unseen_in_cohort_train": 0.12351022456404466
+          },
+          "fractions_user_macro": {
+            "in_vocab": 0.8516187388584704,
+            "train_seen_excluded": 0.02684193005888934,
+            "unseen_in_cohort_train": 0.12153933108264069
+          },
+          "oov_composition_micro": {
+            "train_seen_excluded": 0.2060483870967742,
+            "unseen_in_cohort_train": 0.7939516129032258
+          }
+        },
+        "confirmation": {
+          "n_rows": 15487,
+          "n_users": 5483,
+          "raw_item_column": "item_id",
+          "n_distinct_raw_target_items": 3112,
+          "class_counts": {
+            "in_vocab": 13020,
+            "train_seen_excluded": 415,
+            "unseen_in_cohort_train": 2052
+          },
+          "class_user_counts": {
+            "in_vocab": 5055,
+            "train_seen_excluded": 289,
+            "unseen_in_cohort_train": 1392
+          },
+          "class_distinct_item_counts": {
+            "in_vocab": 2503,
+            "train_seen_excluded": 271,
+            "unseen_in_cohort_train": 338
+          },
+          "fractions_micro": {
+            "in_vocab": 0.8407051075095241,
+            "train_seen_excluded": 0.026796668173306646,
+            "unseen_in_cohort_train": 0.13249822431716923
+          },
+          "fractions_user_macro": {
+            "in_vocab": 0.8490346637345432,
+            "train_seen_excluded": 0.019163310046234647,
+            "unseen_in_cohort_train": 0.1318020262192228
+          },
+          "oov_composition_micro": {
+            "train_seen_excluded": 0.16822051074179165,
+            "unseen_in_cohort_train": 0.8317794892582083
+          }
+        }
+      },
+      "train_counts_csv": {
+        "filename": "kion_catalog_train_counts.csv"
+      }
+    },
+    "yambda": {
+      "n_cohort_users": 2000,
+      "n_catalog_items": 10000,
+      "train_prefix": {
+        "source_user_rows_scanned": 10000,
+        "cohort_source_users": 2000,
+        "cohort_all_period_listens": 12671647,
+        "train_cutoff_relative_seconds": 17656610,
+        "rule": "All listen events of the frozen cohort strictly before train_end_timestamp, both organic and recommendation-driven; explicit feedback is excluded by null playback-field validity, exactly as in the frozen adapter.",
+        "n_raw_events": 8055942,
+        "n_distinct_raw_items": 350985,
+        "n_train_items_excluded_from_catalog": 340985,
+        "in_vocab_raw_event_fraction": 0.5240984853168009,
+        "catalog_rule": "Descending all-cohort-train raw item frequency, ties ascending raw item ID; exact reconstruction verified."
+      },
+      "splits": {
+        "train": {
+          "n_rows": 178439,
+          "n_users": 2000,
+          "raw_item_column": "item_id",
+          "n_distinct_raw_target_items": 54275,
+          "class_counts": {
+            "in_vocab": 105572,
+            "train_seen_excluded": 72867,
+            "unseen_in_cohort_train": 0
+          },
+          "class_user_counts": {
+            "in_vocab": 1981,
+            "train_seen_excluded": 1931,
+            "unseen_in_cohort_train": 0
+          },
+          "class_distinct_item_counts": {
+            "in_vocab": 9657,
+            "train_seen_excluded": 44618,
+            "unseen_in_cohort_train": 0
+          },
+          "fractions_micro": {
+            "in_vocab": 0.591641961678781,
+            "train_seen_excluded": 0.40835803832121903,
+            "unseen_in_cohort_train": 0.0
+          },
+          "fractions_user_macro": {
+            "in_vocab": 0.6010585465428181,
+            "train_seen_excluded": 0.39894145345718135,
+            "unseen_in_cohort_train": 0.0
+          },
+          "oov_composition_micro": {
+            "train_seen_excluded": 1.0,
+            "unseen_in_cohort_train": 0.0
+          }
+        },
+        "rm_valid": {
+          "n_rows": 30284,
+          "n_users": 1644,
+          "raw_item_column": "item_id",
+          "n_distinct_raw_target_items": 17141,
+          "class_counts": {
+            "in_vocab": 15555,
+            "train_seen_excluded": 12512,
+            "unseen_in_cohort_train": 2217
+          },
+          "class_user_counts": {
+            "in_vocab": 1569,
+            "train_seen_excluded": 1552,
+            "unseen_in_cohort_train": 863
+          },
+          "class_distinct_item_counts": {
+            "in_vocab": 5977,
+            "train_seen_excluded": 9929,
+            "unseen_in_cohort_train": 1235
+          },
+          "fractions_micro": {
+            "in_vocab": 0.5136375643904372,
+            "train_seen_excluded": 0.4131554616299036,
+            "unseen_in_cohort_train": 0.07320697397965922
+          },
+          "fractions_user_macro": {
+            "in_vocab": 0.5155981708238302,
+            "train_seen_excluded": 0.4051242905657217,
+            "unseen_in_cohort_train": 0.0792775386104487
+          },
+          "oov_composition_micro": {
+            "train_seen_excluded": 0.8494806164709078,
+            "unseen_in_cohort_train": 0.15051938352909228
+          }
+        },
+        "valid": {
+          "n_rows": 30352,
+          "n_users": 1664,
+          "raw_item_column": "item_id",
+          "n_distinct_raw_target_items": 17291,
+          "class_counts": {
+            "in_vocab": 13959,
+            "train_seen_excluded": 11500,
+            "unseen_in_cohort_train": 4893
+          },
+          "class_user_counts": {
+            "in_vocab": 1585,
+            "train_seen_excluded": 1549,
+            "unseen_in_cohort_train": 1254
+          },
+          "class_distinct_item_counts": {
+            "in_vocab": 5581,
+            "train_seen_excluded": 9438,
+            "unseen_in_cohort_train": 2272
+          },
+          "fractions_micro": {
+            "in_vocab": 0.4599037954665261,
+            "train_seen_excluded": 0.37888771744860306,
+            "unseen_in_cohort_train": 0.16120848708487084
+          },
+          "fractions_user_macro": {
+            "in_vocab": 0.4633420279546261,
+            "train_seen_excluded": 0.3717779473639079,
+            "unseen_in_cohort_train": 0.1648800246814659
+          },
+          "oov_composition_micro": {
+            "train_seen_excluded": 0.7015189410114073,
+            "unseen_in_cohort_train": 0.2984810589885927
+          }
+        },
+        "test": {
+          "n_rows": 30793,
+          "n_users": 1658,
+          "raw_item_column": "item_id",
+          "n_distinct_raw_target_items": 17975,
+          "class_counts": {
+            "in_vocab": 12994,
+            "train_seen_excluded": 11827,
+            "unseen_in_cohort_train": 5972
+          },
+          "class_user_counts": {
+            "in_vocab": 1564,
+            "train_seen_excluded": 1554,
+            "unseen_in_cohort_train": 1360
+          },
+          "class_distinct_item_counts": {
+            "in_vocab": 5464,
+            "train_seen_excluded": 9571,
+            "unseen_in_cohort_train": 2940
+          },
+          "fractions_micro": {
+            "in_vocab": 0.4219790212061183,
+            "train_seen_excluded": 0.3840807975838665,
+            "unseen_in_cohort_train": 0.19394018121001527
+          },
+          "fractions_user_macro": {
+            "in_vocab": 0.42094868337753993,
+            "train_seen_excluded": 0.37794161912408863,
+            "unseen_in_cohort_train": 0.2011096974983729
+          },
+          "oov_composition_micro": {
+            "train_seen_excluded": 0.6644755323332772,
+            "unseen_in_cohort_train": 0.33552446766672284
+          }
+        },
+        "confirmation": {
+          "n_rows": 32053,
+          "n_users": 1772,
+          "raw_item_column": "item_id",
+          "n_distinct_raw_target_items": 18570,
+          "class_counts": {
+            "in_vocab": 12923,
+            "train_seen_excluded": 12102,
+            "unseen_in_cohort_train": 7028
+          },
+          "class_user_counts": {
+            "in_vocab": 1631,
+            "train_seen_excluded": 1653,
+            "unseen_in_cohort_train": 1478
+          },
+          "class_distinct_item_counts": {
+            "in_vocab": 5453,
+            "train_seen_excluded": 9698,
+            "unseen_in_cohort_train": 3419
+          },
+          "fractions_micro": {
+            "in_vocab": 0.4031759897669485,
+            "train_seen_excluded": 0.377562162668081,
+            "unseen_in_cohort_train": 0.21926184756497052
+          },
+          "fractions_user_macro": {
+            "in_vocab": 0.40273153554550956,
+            "train_seen_excluded": 0.3727103897505277,
+            "unseen_in_cohort_train": 0.22455807470396336
+          },
+          "oov_composition_micro": {
+            "train_seen_excluded": 0.6326189231573445,
+            "unseen_in_cohort_train": 0.36738107684265553
+          }
+        }
+      },
+      "train_counts_csv": {
+        "filename": "yambda_catalog_train_counts.csv"
+      }
+    }
+  }
+}

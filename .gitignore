@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+*.pt
+*.pkl
+*.parquet
+data/
+artifacts/
+catboost_info/
+*.egg-info/
+.DS_Store

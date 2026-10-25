@@ -1,0 +1,123 @@
+{
+  "dataset": "yambda",
+  "seed": 42,
+  "n_users": 2000,
+  "vocab_size": 10000,
+  "min_history": 5,
+  "max_length": 48,
+  "max_train_examples": 200000,
+  "exclude_seen": false,
+  "threads": 4,
+  "batch_size": 256,
+  "sft_epochs": 6,
+  "sft_patience": 2,
+  "sft_seeds": [
+    11,
+    22,
+    33
+  ],
+  "architectures": [
+    {
+      "name": "medium",
+      "embedding_dim": 128,
+      "layers": 2,
+      "heads": 4,
+      "max_length": 48,
+      "dropout": 0.1,
+      "sft_lr": 0.001,
+      "label_smoothing": 0.02
+    }
+  ],
+  "rl_steps": 120,
+  "rl_batch_size": 24,
+  "rl_group_size": 4,
+  "gamma": 1.0,
+  "rl_lr": 0.00015,
+  "eval_batch_size": 128,
+  "rerank_alphas": [
+    0,
+    0.25,
+    0.5,
+    1,
+    2,
+    4,
+    8
+  ],
+  "rerank_top_m": 200,
+  "noninferiority_margin": 0.05,
+  "bootstrap_samples": 2000,
+  "variants": [
+    {
+      "name": "matched_control",
+      "reward": "completion",
+      "pg_weight": 0,
+      "beta": 0.2,
+      "ce_weight": 0.5,
+      "horizon": 5,
+      "rm_context": "frozen"
+    },
+    {
+      "name": "raw_h5",
+      "reward": "completion",
+      "pg_weight": 1,
+      "beta": 0,
+      "ce_weight": 0,
+      "horizon": 5,
+      "rm_context": "frozen"
+    },
+    {
+      "name": "anchored_h1",
+      "reward": "completion",
+      "pg_weight": 1,
+      "beta": 0.2,
+      "ce_weight": 0.5,
+      "horizon": 1,
+      "rm_context": "frozen"
+    },
+    {
+      "name": "anchored_h5",
+      "reward": "completion",
+      "pg_weight": 1,
+      "beta": 0.2,
+      "ce_weight": 0.5,
+      "horizon": 5,
+      "rm_context": "frozen"
+    },
+    {
+      "name": "conservative_h5",
+      "reward": "conservative",
+      "pg_weight": 1,
+      "beta": 0.2,
+      "ce_weight": 0.5,
+      "horizon": 5,
+      "rm_context": "frozen"
+    },
+    {
+      "name": "duration_neutral_h5",
+      "reward": "duration_neutral",
+      "pg_weight": 1,
+      "beta": 0.2,
+      "ce_weight": 0.5,
+      "horizon": 5,
+      "rm_context": "frozen"
+    },
+    {
+      "name": "seconds_h5",
+      "reward": "seconds",
+      "pg_weight": 1,
+      "beta": 0.2,
+      "ce_weight": 0.5,
+      "horizon": 5,
+      "rm_context": "frozen"
+    }
+  ],
+  "train_examples_per_user": 100,
+  "eval_examples_per_user": 20,
+  "temporal_quantiles": [
+    0.6,
+    0.7,
+    0.8,
+    0.9
+  ],
+  "parquet_batch_users": 128
+}

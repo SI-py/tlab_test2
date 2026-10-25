@@ -1,0 +1,359 @@
+{
+  "version": 1,
+  "dataset": "kion",
+  "analysis_role": "secondary descriptive hardware and runtime sensitivity; one matched training seed33",
+  "interpretation": "CPU and CUDA training also differ in Python/PyTorch/runtime versions and floating-point kernels. This is hardware-plus-runtime sensitivity, not an isolated causal hardware experiment. Record complete actual environments.",
+  "inference_scope": "Descriptive checkpoint sensitivity only. No new NI test, Holm family, confirmatory p-value, recipe selection or quality-based omission. One seed does not identify a distribution over training randomness.",
+  "splits": {
+    "test": {
+      "n_examples": 15942,
+      "n_users": 5627,
+      "identity_hash_pandas_version": "3.1.0",
+      "families": {
+        "matched_control": {
+          "metrics": {
+            "ndcg@10": {
+              "primary_cpu_seed33": 0.09019848962091012,
+              "secondary_gpu_seed33": 0.09019910137639076,
+              "delta_gpu_minus_cpu_seed33": 6.117554806339687e-07,
+              "primary_three_seed_mean": 0.08957187784664067,
+              "sensitivity_replacement_mean": 0.0895720817651342,
+              "delta_three_seed_mean": 2.0391849354465622e-07,
+              "unchanged_seed11": 0.0898483822078406,
+              "unchanged_seed22": 0.08866876171117129
+            },
+            "factual_completion_weighted_hit@10": {
+              "primary_cpu_seed33": 0.07345145470943983,
+              "secondary_gpu_seed33": 0.07337089076180639,
+              "delta_gpu_minus_cpu_seed33": -8.056394763343577e-05,
+              "primary_three_seed_mean": 0.07424395321274152,
+              "sensitivity_replacement_mean": 0.07421709856353037,
+              "delta_three_seed_mean": -2.685464921114526e-05,
+              "unchanged_seed11": 0.07483804311468364,
+              "unchanged_seed22": 0.07444236181410108
+            }
+          }
+        },
+        "raw_h5": {
+          "metrics": {
+            "ndcg@10": {
+              "primary_cpu_seed33": 0.0672547746530122,
+              "secondary_gpu_seed33": 0.06860901891375709,
+              "delta_gpu_minus_cpu_seed33": 0.0013542442607448885,
+              "primary_three_seed_mean": 0.06895648977031131,
+              "sensitivity_replacement_mean": 0.06940790452389294,
+              "delta_three_seed_mean": 0.00045141475358162947,
+              "unchanged_seed11": 0.06894778209908438,
+              "unchanged_seed22": 0.07066691255883732
+            },
+            "factual_completion_weighted_hit@10": {
+              "primary_cpu_seed33": 0.06511808751082097,
+              "secondary_gpu_seed33": 0.06518877732264607,
+              "delta_gpu_minus_cpu_seed33": 7.068981182509204e-05,
+              "primary_three_seed_mean": 0.06438931955964337,
+              "sensitivity_replacement_mean": 0.06441288283025172,
+              "delta_three_seed_mean": 2.3563270608364013e-05,
+              "unchanged_seed11": 0.06450123791440444,
+              "unchanged_seed22": 0.06354863325370468
+            }
+          }
+        },
+        "anchored_h1": {
+          "metrics": {
+            "ndcg@10": {
+              "primary_cpu_seed33": 0.08968414889444302,
+              "secondary_gpu_seed33": 0.08960046839520155,
+              "delta_gpu_minus_cpu_seed33": -8.368049924147025e-05,
+              "primary_three_seed_mean": 0.08869803253761377,
+              "sensitivity_replacement_mean": 0.08867013903786662,
+              "delta_three_seed_mean": -2.7893499747156752e-05,
+              "unchanged_seed11": 0.08896363036999314,
+              "unchanged_seed22": 0.08744631834840512
+            },
+            "factual_completion_weighted_hit@10": {
+              "primary_cpu_seed33": 0.07369265964174153,
+              "secondary_gpu_seed33": 0.07398612012306854,
+              "delta_gpu_minus_cpu_seed33": 0.0002934604813270153,
+              "primary_three_seed_mean": 0.07460609834965226,
+              "sensitivity_replacement_mean": 0.0747039185100946,
+              "delta_three_seed_mean": 9.782016044233843e-05,
+              "unchanged_seed11": 0.07570235630630567,
+              "unchanged_seed22": 0.0744232791009096
+            }
+          }
+        },
+        "anchored_h5": {
+          "metrics": {
+            "ndcg@10": {
+              "primary_cpu_seed33": 0.08860128846932505,
+              "secondary_gpu_seed33": 0.08896771457094416,
+              "delta_gpu_minus_cpu_seed33": 0.00036642610161910505,
+              "primary_three_seed_mean": 0.08820300605149722,
+              "sensitivity_replacement_mean": 0.08832514808537024,
+              "delta_three_seed_mean": 0.00012214203387303502,
+              "unchanged_seed11": 0.08875809881295568,
+              "unchanged_seed22": 0.08724963087221094
+            },
+            "factual_completion_weighted_hit@10": {
+              "primary_cpu_seed33": 0.07336548962118247,
+              "secondary_gpu_seed33": 0.07395005919926546,
+              "delta_gpu_minus_cpu_seed33": 0.0005845695780829913,
+              "primary_three_seed_mean": 0.0745346802004214,
+              "sensitivity_replacement_mean": 0.07472953672644905,
+              "delta_three_seed_mean": 0.00019485652602766376,
+              "unchanged_seed11": 0.07586823734353004,
+              "unchanged_seed22": 0.07437031363655165
+            }
+          }
+        },
+        "appended_h5": {
+          "metrics": {
+            "ndcg@10": {
+              "primary_cpu_seed33": 0.08862860672786974,
+              "secondary_gpu_seed33": 0.08920194211150122,
+              "delta_gpu_minus_cpu_seed33": 0.000573335383631482,
+              "primary_three_seed_mean": 0.08815756154180214,
+              "sensitivity_replacement_mean": 0.08834867333634595,
+              "delta_three_seed_mean": 0.00019111179454382732,
+              "unchanged_seed11": 0.0887801893958976,
+              "unchanged_seed22": 0.08706388850163907
+            },
+            "factual_completion_weighted_hit@10": {
+              "primary_cpu_seed33": 0.0734875252430848,
+              "secondary_gpu_seed33": 0.07398007321897204,
+              "delta_gpu_minus_cpu_seed33": 0.000492547975887242,
+              "primary_three_seed_mean": 0.07461099577349366,
+              "sensitivity_replacement_mean": 0.07477517843212274,
+              "delta_three_seed_mean": 0.00016418265862908066,
+              "unchanged_seed11": 0.07578641323789218,
+              "unchanged_seed22": 0.07455904883950402
+            }
+          }
+        },
+        "conservative_h5": {
+          "metrics": {
+            "ndcg@10": {
+              "primary_cpu_seed33": 0.08893883645660067,
+              "secondary_gpu_seed33": 0.08943617849322734,
+              "delta_gpu_minus_cpu_seed33": 0.0004973420366266718,
+              "primary_three_seed_mean": 0.08814578434772526,
+              "sensitivity_replacement_mean": 0.08831156502660081,
+              "delta_three_seed_mean": 0.00016578067887555725,
+              "unchanged_seed11": 0.08847779391502975,
+              "unchanged_seed22": 0.08702072267154538
+            },
+            "factual_completion_weighted_hit@10": {
+              "primary_cpu_seed33": 0.07414396351188313,
+              "secondary_gpu_seed33": 0.07398910449435304,
+              "delta_gpu_minus_cpu_seed33": -0.0001548590175300818,
+              "primary_three_seed_mean": 0.07486693703399627,
+              "sensitivity_replacement_mean": 0.07481531736148624,
+              "delta_three_seed_mean": -5.161967251002727e-05,
+              "unchanged_seed11": 0.07598671669441566,
+              "unchanged_seed22": 0.07447013089569005
+            }
+          }
+        },
+        "retention_h5": {
+          "metrics": {
+            "ndcg@10": {
+              "primary_cpu_seed33": 0.08940049356044791,
+              "secondary_gpu_seed33": 0.08896547555497626,
+              "delta_gpu_minus_cpu_seed33": -0.00043501800547164626,
+              "primary_three_seed_mean": 0.08868865507070224,
+              "sensitivity_replacement_mean": 0.08854364906887836,
+              "delta_three_seed_mean": -0.0001450060018238821,
+              "unchanged_seed11": 0.08901919137148684,
+              "unchanged_seed22": 0.08764628028017199
+            },
+            "factual_completion_weighted_hit@10": {
+              "primary_cpu_seed33": 0.07368116176908972,
+              "secondary_gpu_seed33": 0.07329658784093362,
+              "delta_gpu_minus_cpu_seed33": -0.0003845739281560928,
+              "primary_three_seed_mean": 0.07456166627186885,
+              "sensitivity_replacement_mean": 0.07443347496248348,
+              "delta_three_seed_mean": -0.00012819130938536427,
+              "unchanged_seed11": 0.07555345345139589,
+              "unchanged_seed22": 0.07445038359512095
+            }
+          }
+        }
+      }
+    },
+    "confirmation": {
+      "n_examples": 15487,
+      "n_users": 5483,
+      "identity_hash_pandas_version": "3.1.0",
+      "families": {
+        "matched_control": {
+          "metrics": {
+            "ndcg@10": {
+              "primary_cpu_seed33": 0.08887727717117598,
+              "secondary_gpu_seed33": 0.08881588932813728,
+              "delta_gpu_minus_cpu_seed33": -6.138784303870437e-05,
+              "primary_three_seed_mean": 0.08764112899360865,
+              "sensitivity_replacement_mean": 0.08762066637926243,
+              "delta_three_seed_mean": -2.046261434623479e-05,
+              "unchanged_seed11": 0.08656671648458589,
+              "unchanged_seed22": 0.0874793933250641
+            },
+            "factual_completion_weighted_hit@10": {
+              "primary_cpu_seed33": 0.06736703405213253,
+              "secondary_gpu_seed33": 0.06733025370074339,
+              "delta_gpu_minus_cpu_seed33": -3.6780351389140153e-05,
+              "primary_three_seed_mean": 0.06778325020727209,
+              "sensitivity_replacement_mean": 0.06777099009014238,
+              "delta_three_seed_mean": -1.2260117129713385e-05,
+              "unchanged_seed11": 0.06741508117318049,
+              "unchanged_seed22": 0.06856763539650326
+            }
+          }
+        },
+        "raw_h5": {
+          "metrics": {
+            "ndcg@10": {
+              "primary_cpu_seed33": 0.06841963111778727,
+              "secondary_gpu_seed33": 0.07041883545025343,
+              "delta_gpu_minus_cpu_seed33": 0.0019992043324661563,
+              "primary_three_seed_mean": 0.07039352636432993,
+              "sensitivity_replacement_mean": 0.0710599278084853,
+              "delta_three_seed_mean": 0.0006664014441553854,
+              "unchanged_seed11": 0.06981436021030407,
+              "unchanged_seed22": 0.0729465877648984
+            },
+            "factual_completion_weighted_hit@10": {
+              "primary_cpu_seed33": 0.05985868136859992,
+              "secondary_gpu_seed33": 0.06042108054567319,
+              "delta_gpu_minus_cpu_seed33": 0.0005623991770732709,
+              "primary_three_seed_mean": 0.05895287261465964,
+              "sensitivity_replacement_mean": 0.059140339007017394,
+              "delta_three_seed_mean": 0.00018746639235775694,
+              "unchanged_seed11": 0.058240587325853965,
+              "unchanged_seed22": 0.05875934914952503
+            }
+          }
+        },
+        "anchored_h1": {
+          "metrics": {
+            "ndcg@10": {
+              "primary_cpu_seed33": 0.08700276722428477,
+              "secondary_gpu_seed33": 0.08732962736343322,
+              "delta_gpu_minus_cpu_seed33": 0.0003268601391484549,
+              "primary_three_seed_mean": 0.08591082926384697,
+              "sensitivity_replacement_mean": 0.0860197826435631,
+              "delta_three_seed_mean": 0.00010895337971615164,
+              "unchanged_seed11": 0.08461170674020578,
+              "unchanged_seed22": 0.08611801382705032
+            },
+            "factual_completion_weighted_hit@10": {
+              "primary_cpu_seed33": 0.06739575658171182,
+              "secondary_gpu_seed33": 0.06763310025789872,
+              "delta_gpu_minus_cpu_seed33": 0.0002373436761868991,
+              "primary_three_seed_mean": 0.06787916952105606,
+              "sensitivity_replacement_mean": 0.06795828407978503,
+              "delta_three_seed_mean": 7.911455872896637e-05,
+              "unchanged_seed11": 0.06741570259329112,
+              "unchanged_seed22": 0.06882604938816524
+            }
+          }
+        },
+        "anchored_h5": {
+          "metrics": {
+            "ndcg@10": {
+              "primary_cpu_seed33": 0.0861187045733142,
+              "secondary_gpu_seed33": 0.08645917586877488,
+              "delta_gpu_minus_cpu_seed33": 0.00034047129546067867,
+              "primary_three_seed_mean": 0.08543410844175814,
+              "sensitivity_replacement_mean": 0.08554759887357836,
+              "delta_three_seed_mean": 0.00011349043182022622,
+              "unchanged_seed11": 0.08467603072404942,
+              "unchanged_seed22": 0.08550759002791081
+            },
+            "factual_completion_weighted_hit@10": {
+              "primary_cpu_seed33": 0.06786880448530958,
+              "secondary_gpu_seed33": 0.06752839672179492,
+              "delta_gpu_minus_cpu_seed33": -0.0003404077635146552,
+              "primary_three_seed_mean": 0.06800578166887533,
+              "sensitivity_replacement_mean": 0.06789231241437045,
+              "delta_three_seed_mean": -0.00011346925450488506,
+              "unchanged_seed11": 0.0674105754867872,
+              "unchanged_seed22": 0.06873796503452924
+            }
+          }
+        },
+        "appended_h5": {
+          "metrics": {
+            "ndcg@10": {
+              "primary_cpu_seed33": 0.08607821473459636,
+              "secondary_gpu_seed33": 0.0865182105223935,
+              "delta_gpu_minus_cpu_seed33": 0.00043999578779714554,
+              "primary_three_seed_mean": 0.0852608195849789,
+              "sensitivity_replacement_mean": 0.08540748484757794,
+              "delta_three_seed_mean": 0.00014666526259904852,
+              "unchanged_seed11": 0.08452791762757766,
+              "unchanged_seed22": 0.08517632639276268
+            },
+            "factual_completion_weighted_hit@10": {
+              "primary_cpu_seed33": 0.06805185512668596,
+              "secondary_gpu_seed33": 0.06770385245944288,
+              "delta_gpu_minus_cpu_seed33": -0.00034800266724308027,
+              "primary_three_seed_mean": 0.06814774484382334,
+              "sensitivity_replacement_mean": 0.06803174395474232,
+              "delta_three_seed_mean": -0.00011600088908102675,
+              "unchanged_seed11": 0.06751321063871346,
+              "unchanged_seed22": 0.06887816876607063
+            }
+          }
+        },
+        "conservative_h5": {
+          "metrics": {
+            "ndcg@10": {
+              "primary_cpu_seed33": 0.08647128245028146,
+              "secondary_gpu_seed33": 0.08660863025269147,
+              "delta_gpu_minus_cpu_seed33": 0.00013734780241000943,
+              "primary_three_seed_mean": 0.0854271220354328,
+              "sensitivity_replacement_mean": 0.08547290463623614,
+              "delta_three_seed_mean": 4.578260080333648e-05,
+              "unchanged_seed11": 0.08470523826788755,
+              "unchanged_seed22": 0.0851048453881294
+            },
+            "factual_completion_weighted_hit@10": {
+              "primary_cpu_seed33": 0.06761260267660313,
+              "secondary_gpu_seed33": 0.06739620182507115,
+              "delta_gpu_minus_cpu_seed33": -0.0002164008515319754,
+              "primary_three_seed_mean": 0.06794518363173069,
+              "sensitivity_replacement_mean": 0.06787305001455336,
+              "delta_three_seed_mean": -7.213361717732514e-05,
+              "unchanged_seed11": 0.06766399037418225,
+              "unchanged_seed22": 0.06855895784440667
+            }
+          }
+        },
+        "retention_h5": {
+          "metrics": {
+            "ndcg@10": {
+              "primary_cpu_seed33": 0.08641686008983542,
+              "secondary_gpu_seed33": 0.08691294183913177,
+              "delta_gpu_minus_cpu_seed33": 0.0004960817492963565,
+              "primary_three_seed_mean": 0.08569186837968433,
+              "sensitivity_replacement_mean": 0.08585722896278312,
+              "delta_three_seed_mean": 0.0001653605830987855,
+              "unchanged_seed11": 0.08492924293304896,
+              "unchanged_seed22": 0.08572950211616862
+            },
+            "factual_completion_weighted_hit@10": {
+              "primary_cpu_seed33": 0.06750918280309844,
+              "secondary_gpu_seed33": 0.0674248114828139,
+              "delta_gpu_minus_cpu_seed33": -8.437132028453476e-05,
+              "primary_three_seed_mean": 0.06782912541920456,
+              "sensitivity_replacement_mean": 0.06780100164577639,
+              "delta_three_seed_mean": -2.812377342817825e-05,
+              "unchanged_seed11": 0.06756009244760512,
+              "unchanged_seed22": 0.06841810100691018
+            }
+          }
+        }
+      }
+    }
+  }
+}
